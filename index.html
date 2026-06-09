@@ -303,7 +303,7 @@ function init(){
   var isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.protocol === 'file:';
   var base = isLocal
     ? 'http://openapi.seoul.go.kr:8088/'+KEY+'/json/culturalEventInfo/'
-    : '/api/'+KEY+'/json/culturalEventInfo/';
+    : '/.netlify/functions/proxy/'+KEY+'/json/culturalEventInfo/';
   var urls=[
     base+'1/1000/',
     base+'1001/2000/',
