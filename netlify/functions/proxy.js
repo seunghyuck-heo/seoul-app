@@ -1,14 +1,28 @@
-export default async (request, context) => {
-  const url = new URL(request.url);
-  const targetUrl = 'http://openapi.seoul.go.kr:8088' + url.pathname.replace('/api', '') + url.search;
+const http = require('http');
 
-  const response = await fetch(targetUrl);
-  const data = await response.text();
+exports.handler = async function(event) {
+  const path = event.path.replace('/.netlify/functions/proxy', '');
+  const url = 'http://openapi.seoul.go.kr:8088' + path;
 
-  return new Response(data, {
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-    },
+  return new Promise((resolve) => {
+    http.get(url, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        resolve({
+          statusCode: 200,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json'
+          },
+          body: data
+        });
+      });
+    }).on('error', (e) => {
+      resolve({
+        statusCode: 500,
+        body: JSON.stringify({ error: e.message })
+      });
+    });
   });
 };
